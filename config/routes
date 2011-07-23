@@ -8,3 +8,5 @@
 
 /build/#String BuildR GET
 /new/#String NewR GET
+/find/#String FindR GET
+/get/#String GetR GET

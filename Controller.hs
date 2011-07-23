@@ -2,6 +2,7 @@
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# OPTIONS_GHC -fno-warn-orphans #-}
+{-# LANGUAGE ScopedTypeVariables #-}
 module Controller
     ( withFoundation
     , withDevelApp
@@ -14,6 +15,9 @@ import Yesod.Helpers.Auth
 import Database.Persist.GenericSql
 import Data.ByteString (ByteString)
 import Data.Dynamic (Dynamic, toDyn)
+import Store.File
+import Store.Base
+import Control.Exception hiding (Handler)
 
 -- Import all relevant handler modules here.
 import Handler.Root
@@ -47,8 +51,15 @@ withDevelApp :: Dynamic
 withDevelApp = toDyn (withFoundation :: (Application -> IO ()) -> IO ())
 
 -- our code starts here
-getBuildr name = echo name
 
 echo = return . RepPlain . toContent
 
-getNewr name = echo name
+getBuildR = wrapStoreAction build
+
+getNewR = wrapStoreAction newRepo
+
+getFindR = wrapStoreAction findRepos
+
+getGetR = wrapStoreAction getRepo
+
+wrapStoreAction f arg = liftIO $ f (fileStore "./stores/default") arg >>= echo . show
