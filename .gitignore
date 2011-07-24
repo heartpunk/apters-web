@@ -1,4 +1,5 @@
 client_session_key.aes
 *.o
 *.hi
-dist/build/*
+dist/**/*
+stores/**/*
