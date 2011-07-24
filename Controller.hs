@@ -18,6 +18,11 @@ import Data.Dynamic (Dynamic, toDyn)
 import Store.File
 import Store.Base
 import Control.Exception hiding (Handler)
+import Data.Enumerator (enumEOF, ($=))
+import qualified Data.Enumerator.List as EL
+import Blaze.ByteString.Builder (fromByteString)
+import Data.Aeson (toJSON, ToJSON)
+import Yesod.Json
 
 -- Import all relevant handler modules here.
 import Handler.Root
@@ -52,7 +57,8 @@ withDevelApp = toDyn (withFoundation :: (Application -> IO ()) -> IO ())
 
 -- our code starts here
 
-echo = return . RepPlain . toContent
+echo :: ToJSON a => a -> GHandler sub master RepJson
+echo = jsonToRepJson . toJSON
 
 getBuildR = wrapStoreAction build
 
@@ -62,4 +68,10 @@ getFindR = wrapStoreAction findRepos
 
 getGetR = wrapStoreAction getRepo
 
-wrapStoreAction f arg = liftIO $ f (fileStore "./stores/default") arg >>= echo . show
+wrapStoreAction f arg = do
+    result <- liftIO $ f defaultFileStore arg
+    echo result
+
+getExportR name = return (("application/x-tar"::ContentType), ContentEnum $ export defaultFileStore name $= EL.map fromByteString)
+
+defaultFileStore = fileStore "./stores/default"

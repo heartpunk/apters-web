@@ -65,3 +65,6 @@ executable         apters-web
                  , warp
                  , blaze-builder
                  , apters
+                 , enumerator
+                 , aeson
+                 , yesod-json

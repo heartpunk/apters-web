@@ -6,7 +6,8 @@
 
 / RootR GET
 
-/build/#String BuildR GET
-/new/#String NewR GET
+/build/#String BuildR POST
+/new/#String NewR POST
 /find/#String FindR GET
 /get/#String GetR GET
+/export/#String ExportR GET
